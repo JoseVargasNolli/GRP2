@@ -1,7 +1,8 @@
 <?php
 
-namespace Model;
+namespace Model\Dba;
 
+require_once ROOT_PATH . '/Model/Dba/ColumnDba.inc';
 /**
  * Description of ColumnVarchar
  *
@@ -20,11 +21,11 @@ class ColumnVarchar extends ColumnDba {
         $xValueTratado = pg_escape_string($xValue);
         if (strlen($xValueTratado) > $this->size) {
             if ($bThrow) {
-                throw new Exception('Valor não suportado');
+                $this->showExceptionNotSupported();
             }
             return false;
         }
-        return true;
+        return is_string($xValue);
     }
 
 }
