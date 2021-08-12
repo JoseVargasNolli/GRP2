@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Model\Dba;
 
 /**
  * Description of ColumnDba
@@ -21,9 +21,13 @@ abstract class ColumnDba {
         return $this->nameDba;
     }
 
-    public function getNameModel() {
+    public function getModelName() {
         return $this->nameModel;
     }
 
-    abstract public function isValorValido($xValorValido);
+    protected function showExceptionNotSupported() {
+        throw new \Exception('Valor não suportado');
+    }
+
+    abstract public function isValorValido($xValorValido, $bThrow = true);
 }
