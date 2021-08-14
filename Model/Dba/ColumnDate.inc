@@ -12,7 +12,13 @@ require_once ROOT_PATH . '/Model/Dba/ColumnDba.inc';
 class ColumnDate extends ColumnDba {
 
     public function isValorValido($xValorValido, $bThrow = true) {
-        if (!!date_create_from_format('d/m/Y', $xValorValido)) {
+        try {
+            $aData = explode('/', $xValorValido);
+
+            if (!(strlen($aData[0]) == 2) || !(strlen($aData[1]) == 2) || !(strlen($aData[2]) == 4)) {
+                $this->showExceptionNotSupported();
+            }
+        } catch (Exception $ex) {
             if ($bThrow) {
                 $this->showExceptionNotSupported();
             }
@@ -21,4 +27,10 @@ class ColumnDate extends ColumnDba {
         return true;
     }
 
+    public function getValorTratadoForInsert($xValue) {
+        if (is_null($xValue)) {
+            return false;
+        }
+        return "'" . parent::getValorTratadoForInsert($xValue) . "'";
+    }
 }

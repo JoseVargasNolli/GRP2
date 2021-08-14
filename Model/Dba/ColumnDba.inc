@@ -28,6 +28,10 @@ abstract class ColumnDba {
     protected function showExceptionNotSupported() {
         throw new \Exception('Valor não suportado');
     }
+    
+    public function getValorTratadoForInsert($xValue) {
+        return $xValue;
+    }
 
     abstract public function isValorValido($xValorValido, $bThrow = true);
 }

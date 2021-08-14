@@ -1,18 +1,37 @@
 <?php
 
+namespace Model\Dba;
+
+require ROOT_PATH . '/Model/Dba/DadosBanco.inc';
+require ROOT_PATH . '/Model/Dba/QueryIterator.inc';
+
 class Connection {
+
+    private $sSqlStartup = ''
+            . 'CREATE TABLE IF NOT EXISTS sistema.user
+(
+    codigo integer NOT NULL,
+    nome character varying(400) COLLATE pg_catalog."default" NOT NULL,
+    dataCadastro date NOT NULL,
+    dataNascimento date NOT NULL,
+    documento character varying(100) COLLATE pg_catalog."default",
+    telefone character varying(20) COLLATE pg_catalog."default",
+    email character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT user_pkey PRIMARY KEY (codigo)
+)
+';
 
     protected function conecta() {
         $oDadosBanco = \DataBase\DadosBanco::getInstance();
         $aParams = '';
-        $aParams .= ($oDadosBanco->getServer()) ? "host='$oDadosBanco->getServer()'" : '';
-        $aParams .= ($oDadosBanco->getPorta()) ? "port='$oDadosBanco->getPorta()'" : '';
-        $aParams .= ($oDadosBanco->getUser()) ? "user='$oDadosBanco->getUser()'" : '';
-        $aParams .= ($oDadosBanco->getPassword()) ? "password='$oDadosBanco->getPassword()'" : '';
-        $aParams .= ($oDadosBanco->getBanco()) ? "dbname='$oDadosBanco->getBanco()'" : '';
+        $aParams .= ($oDadosBanco->getServer()) ? " host={$oDadosBanco->getServer()} " : '';
+        $aParams .= ($oDadosBanco->getPorta()) ? " port={$oDadosBanco->getPorta()} " : '';
+        $aParams .= ($oDadosBanco->getUser()) ? " user={$oDadosBanco->getUser()} " : '';
+        $aParams .= ($oDadosBanco->getPassword()) ? " password={$oDadosBanco->getPassword()} " : '';
+        $aParams .= ($oDadosBanco->getBanco()) ? " dbname={$oDadosBanco->getBanco()} " : '';
         $oThrowable = false;
         try {
-            $this->connection = pg_connect($params);
+            $this->connection = pg_connect($aParams);
         } catch (Throwable $exc) {
             $oThrowable = $exc;
         }
@@ -21,25 +40,47 @@ class Connection {
             if ($xDebug) {
                 throw $oThrowable;
             } else {
-                throw new Exception('Erro ao se comunicar com o servidor, contate o suporte');
+                throw new \Exception('Erro ao se comunicar com o servidor, contate o suporte');
             }
         }
+        if ($this->isConnected) {
+            $this->execute($this->sSqlStartup);
+        }
         return $this->isConnected;
+    }
+
+    public function begin() {
+        $this->conecta();
+        pg_query($this->connection, 'begin');
+        return $this;
+    }
+
+    public function commit() {
+        if ($Error = pg_last_error($this->connection)) {
+
+            $this->rollback();
+            throw new \Exception($Error);
+        } else {
+            pg_query($this->connection, 'commit');
+        }
+        pg_close($this->connection);
+        return $this;
+    }
+
+    public function rollback() {
+        pg_query($this->connection, 'rollback');
     }
 
     public function execute($sSql) {
         $xResource = false;
         try {
-            $xResource = pg_query($this->connection->get_resource(), $sSql);
+            var_dump('Sql a ser executado é:' . $sSql);
+            $xResource = pg_query($this->connection, $sSql);
         } catch (Throwable $e) {
             
         }
 
         return $xResource;
-    }
-
-    public function getAll($sSql) {
-        return new QueryIterator($this - connection, $sSql);
     }
 
 }

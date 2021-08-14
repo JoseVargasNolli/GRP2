@@ -14,7 +14,7 @@ class User extends Dba\ModelDba {
     }
 
     protected function getSchemaName() {
-        return 'system';
+        return 'sistema';
     }
 
     protected function getPk() {
@@ -23,7 +23,7 @@ class User extends Dba\ModelDba {
 
     protected function getInstanceColumns() {
         return [
-            new Dba\ColumnInteger('codigo', 'codigo'),
+            (new Dba\ColumnInteger('codigo', 'codigo'))->increment(),
             new Dba\ColumnVarchar('nome', 'nome', 400),
             new Dba\ColumnDate('dataCadastro', 'dataCadastro'),
             new Dba\ColumnDate('dataNascimento', 'dataNascimento'),

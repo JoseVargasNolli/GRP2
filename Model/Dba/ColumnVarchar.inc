@@ -3,6 +3,7 @@
 namespace Model\Dba;
 
 require_once ROOT_PATH . '/Model/Dba/ColumnDba.inc';
+
 /**
  * Description of ColumnVarchar
  *
@@ -26,6 +27,13 @@ class ColumnVarchar extends ColumnDba {
             return false;
         }
         return is_string($xValue);
+    }
+
+    public function getValorTratadoForInsert($xValue) {
+        if (is_null($xValue)) {
+            return false;
+        }
+        return "'" . parent::getValorTratadoForInsert($xValue) . "'";
     }
 
 }

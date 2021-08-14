@@ -14,13 +14,13 @@ class UserManager extends \Model\Manager\ManagerBase {
 
     protected function getData() {
         $aData = [];
-        $aData['codigo'] = isset($_POST['codigo']) ?: null;
-        $aData['nome'] = isset($_POST['nome']) ?: null;
-        $aData['dataCadastro'] = isset($_POST['dataCadastro']) ?: null;
-        $aData['dataNascimento'] = isset($_POST['dataNascimento']) ?: null;
-        $aData['documento'] = isset($_POST['documento']) ?: null;
-        $aData['telefone'] = isset($_POST['telefone']) ?: null;
-        $aData['email'] = isset($_POST['email']) ?: null;
+        $aData['codigo'] = isset($_POST['codigo']) ? $_POST['codigo'] : null;
+        $aData['nome'] = isset($_POST['nome']) ? $_POST['nome'] : null;
+        $aData['dataCadastro'] = isset($_POST['dataCadastro']) ? $_POST['dataCadastro'] : null;
+        $aData['dataNascimento'] = isset($_POST['dataNascimento']) ? $_POST['dataNascimento'] : null;
+        $aData['documento'] = isset($_POST['documento']) ? $_POST['documento'] : null;
+        $aData['telefone'] = isset($_POST['telefone']) ? $_POST['telefone'] : null;
+        $aData['email'] = isset($_POST['email']) ? $_POST['email'] : null;
         return $aData;
     }
 
@@ -44,7 +44,8 @@ class UserManager extends \Model\Manager\ManagerBase {
     }
 
     public function searchAll() {
-        
+        $oUser = new \Model\User();
+        $oUser->searchAll();
     }
 
     public function update() {

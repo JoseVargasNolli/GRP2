@@ -1,6 +1,7 @@
 <?php
 
 define('ROOT_PATH', dirname(__FILE__));
+define('DEBUG', true);
 
 function catchException(Exception $ex) {
     var_dump($ex->getTrace());
@@ -9,10 +10,8 @@ function catchException(Exception $ex) {
 set_error_handler('catchException', 0);
 
 
-var_dump($_GET);
 $sData = $_GET['data'];
-//die();
-//$operation = $_GET['op'];
+$operation = $_GET['op'];
 
 $oManager = false;
 switch ($sData) {
@@ -30,6 +29,9 @@ if ($oManager) {
     switch ($operation) {
         case 'create':
             $oManager->create();
+            break;
+        case 'searchAll':
+            $oManager->searchAll();
             break;
     }
 }
