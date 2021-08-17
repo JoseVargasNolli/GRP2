@@ -6,11 +6,15 @@ require_once ROOT_PATH . '/Model/Dba/Connection.inc';
 
 abstract class ModelDba {
 
+    private $attribute;
     private $colunas;
 
     public function __construct() {
         $this->attribute = [];
-        $this->colunas = $this->getInstanceColumns();
+        $this->colunas = [];
+        foreach ($this->getInstanceColumns() as $oColumnDba) {
+            $this->colunas[strtolower($oColumnDba->getModelName())] = $oColumnDba;
+        }
     }
 
     abstract protected function getPk();
@@ -26,17 +30,38 @@ abstract class ModelDba {
     }
 
     protected function getColumn($sName) {
-        if (!isset($this->coluna[$sName])) {
-            throw new Exception('Erro não esperado, contate o suporte');
+        $sName = strtolower($sName);
+        if (!isset($this->colunas[$sName])) {
+            throw new \Exception('Erro não esperado, contate o suporte (' . $sName . ')');
         }
-        return $this->coluna[$sName];
+        return $this->colunas[$sName];
+    }
+
+    public function searchAll() {
+        $aData = new \Model\Dba\QueryIterator($this->getSqlSearch());
+
+        $aModels = [];
+        foreach ($aData as $aLinha) {
+            $oClone = new $this;
+            $oClone->loadFromData($aLinha);
+            $aModels[] = $oClone;
+        }
+        $aData->end();
+        return $aModels;
+    }
+
+    private function getSqlSearch() {
+        $aColumns = [];
+        foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
+            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
+        }
+        return 'SELECT ' . join(',', $aColumns) . '  FROM ' . $this->getSchemaName() . '.' . $this->getTableName();
     }
 
     public function create() {
         $oConnection = new Connection();
         $oConnection->begin();
-        $oConnection->setSql($this->getSqlInsert());
-        $bSucess = $oConnection->execute();
+        $bSucess = $oConnection->execute($this->getSqlInsert());
         $oConnection->commit();
         return $bSucess;
     }
@@ -55,7 +80,7 @@ abstract class ModelDba {
         $sSchema = $this->getSchemaName();
 
         list($aColumns, $aValues) = $this->getValuesTratados();
-        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join($aColumns, ','), join($aValues, ','));
+        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join(',', $aColumns), join(',', $aValues));
     }
 
     private function getValuesTratados() {
@@ -63,10 +88,23 @@ abstract class ModelDba {
         $aValues = [];
         foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
             $xValue = $this->getAttribute($oColuna->getModelName());
-            $oColuna->isValorValido($xValue);
             if ($xValue && !is_null($xValue)) {
-                $aColumns[] = $sColuna = $oColuna->getDbaName();
-                $aValues[] = $xValue;
+                $oColuna->isValorValido($xValue);
+                $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
+                $aValues[$sColuna] = $xValue;
+            }
+        }
+        return [$aColumns, $aValues];
+    }
+
+    private function getValuesForInsert() {
+        list($aColumns, $aValues) = $this->getValuesTratados();
+        foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
+            $sColuna = $oColuna->getModelName();
+            $xValue = isset($aValues[$sColuna]) ? $aValues[$sColuna] : null;
+            if ($sTratado = $oColuna->getValorTratadoForInsert($xValue)) {
+                $aColumns[$sColuna] = $sColuna;
+                $aValues[$sColuna] = $sTratado;
             }
         }
         return [$aColumns, $aValues];
@@ -76,12 +114,13 @@ abstract class ModelDba {
         $sTable = $this->getTableName();
         $sSchema = $this->getSchemaName();
 
-        list($aColumns, $aValues) = $this->getValuesTratados();
-        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join($aColumns, ','), join($aValues, ','));
+        list($aColumns, $aValues) = $this->getValuesForInsert();
+        $sSql = 'INSERT INTO %tabela% (' . join(',', $aColumns) . ') VALUES (' . join(',', $aValues) . ')';
+        return str_replace('%tabela%', $sSchema . '.' . $sTable, $sSql);
     }
 
     protected function getAttribute($sAttributeName) {
-        return $this->attribute[$sAttributeName];
+        return isset($this->attribute[$sAttributeName]) ? $this->attribute[$sAttributeName] : null;
     }
 
     protected function setAttribute($sAttributeName, $sValue) {
@@ -92,12 +131,17 @@ abstract class ModelDba {
         foreach ($aData as $sKey => $xValue) {
             if ($xValue) {
                 $oColuna = $this->getColumn($sKey);
-                if ($oColuna) {
+                if ($oColuna && $xValue) {
                     $this->setAttribute($sKey, $xValue);
                 }
             }
         }
         $this->getValuesTratados();
+    }
+    
+    public function toJson(){
+        $Json = $this->attribute;
+        return $Json;
     }
 
 }

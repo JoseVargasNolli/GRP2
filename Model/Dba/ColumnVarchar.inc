@@ -2,13 +2,14 @@
 
 namespace Model\Dba;
 
-require_once ROOT_PATH . '/Model/Dba/ColumnDba.inc';
+require_once ROOT_PATH . '/Model/Dba/ColumnText.inc';
+
 /**
  * Description of ColumnVarchar
  *
  * @author bruno
  */
-class ColumnVarchar extends ColumnDba {
+class ColumnVarchar extends ColumnText {
 
     private $size;
 
@@ -25,7 +26,7 @@ class ColumnVarchar extends ColumnDba {
             }
             return false;
         }
-        return is_string($xValue);
+        return parent::isValorValido($xValueTratado);
     }
 
 }

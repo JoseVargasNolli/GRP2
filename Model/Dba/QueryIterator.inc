@@ -1,14 +1,21 @@
 <?php
 
-class QueryIterator implements Iterator, Countable {
+namespace Model\Dba;
 
-    function __construct($connection, $sSql) {
-        $this->connection = $connection;
+class QueryIterator implements \Iterator, \Countable {
+
+    function __construct($sSql) {
+        $this->connection = new Connection();
+        $this->connection->begin();
         $this->sql = $sSql;
     }
 
     private $rowNumber;
     private $rowContent;
+
+    function end() {
+        $this->connection->rollback();
+    }
 
     function init() {
         $this->resource = $this->connection->execute($this->sql);

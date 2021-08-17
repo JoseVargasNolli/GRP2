@@ -7,10 +7,10 @@ require_once ROOT_PATH . '/Model/Dba/ColumnVarchar.inc';
 require_once ROOT_PATH . '/Model/Dba/ColumnInteger.inc';
 require_once ROOT_PATH . '/Model/Dba/ModelDba.inc';
 
-class User extends Dba\ModelDba {
+class Solicitacao extends Dba\ModelDba {
 
     protected function getTableName() {
-        return 'user';
+        return 'solicitacao';
     }
 
     protected function getSchemaName() {
@@ -26,10 +26,8 @@ class User extends Dba\ModelDba {
             (new Dba\ColumnInteger('codigo', 'codigo'))->increment(),
             new Dba\ColumnVarchar('nome', 'nome', 400),
             new Dba\ColumnDate('dataCadastro', 'dataCadastro'),
-            new Dba\ColumnDate('dataNascimento', 'dataNascimento'),
-            new Dba\ColumnVarchar('documento', 'documento', 100),
-            new Dba\ColumnVarchar('telefone', 'telefone', 20),
-            new Dba\ColumnVarchar('email', 'email', 100),
+            new Dba\ColumnText('texto', 'texto'),
+            new Dba\ColumnInteger('codigoUsuario', 'codigoUsuario', 100)
         ];
     }
 
@@ -57,36 +55,20 @@ class User extends Dba\ModelDba {
         $this->setAttribute('dataCadastro', $dataCadastro);
     }
 
-    function getDataNascimento() {
-        return $this->getAttribute('dataNascimento');
+    function getTexto() {
+        return $this->getAttribute('texto');
     }
 
-    function setDataNascimento($dataNascimento): void {
-        $this->setAttribute('dataNascimento', $dataNascimento);
+    function setTexto($Texto): void {
+        $this->setAttribute('texto', $Texto);
     }
 
-    function getDocumento() {
-        return $this->getAttribute('documento');
+    function getCodigoUsuario() {
+        return $this->getAttribute('codigoUsuario');
     }
 
-    function setDocumento($documento): void {
-        $this->setAttribute('documento', $documento);
-    }
-
-    function getTelefone() {
-        return $this->getAttribute('telefone');
-    }
-
-    function setTelefone($telefone): void {
-        $this->setAttribute('telefone', $telefone);
-    }
-
-    function getEmail() {
-        return $this->getAttribute('email');
-    }
-
-    function setEmail($email): void {
-        $this->setAttribute('email', $email);
+    function setCodigoUsuario($CodigoUsuario): void {
+        $this->setAttribute('codigoUsuario', $CodigoUsuario);
     }
 
 }

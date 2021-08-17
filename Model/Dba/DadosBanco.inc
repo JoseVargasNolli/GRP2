@@ -1,6 +1,6 @@
 <?php
 
-namespace \DataBase;
+namespace DataBase;
 
 class DadosBanco {
 
@@ -19,11 +19,11 @@ class DadosBanco {
     }
 
     private function __construct() {
-        $this->server = '192.168.2.2';
-        $this->port = 2255;
+        $this->server = 'localhost';
+        $this->port = 5432;
         $this->user = 'postgres';
         $this->password = 'admin';
-        $this->banco = 'database';
+        $this->banco = 'postgres';
     }
 
     function getServer() {
