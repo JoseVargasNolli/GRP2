@@ -6,13 +6,14 @@ require_once ROOT_PATH . '/Model/Dba/Connection.inc';
 
 abstract class ModelDba {
 
+    private $attribute;
     private $colunas;
 
     public function __construct() {
         $this->attribute = [];
         $this->colunas = [];
         foreach ($this->getInstanceColumns() as $oColumnDba) {
-            $this->colunas[$oColumnDba->getModelName()] = $oColumnDba;
+            $this->colunas[strtolower($oColumnDba->getModelName())] = $oColumnDba;
         }
     }
 
@@ -29,8 +30,9 @@ abstract class ModelDba {
     }
 
     protected function getColumn($sName) {
+        $sName = strtolower($sName);
         if (!isset($this->colunas[$sName])) {
-            throw new \Exception('Erro não esperado, contate o suporte');
+            throw new \Exception('Erro não esperado, contate o suporte (' . $sName . ')');
         }
         return $this->colunas[$sName];
     }
@@ -40,7 +42,7 @@ abstract class ModelDba {
 
         $aModels = [];
         foreach ($aData as $aLinha) {
-            $oClone = new self();
+            $oClone = new $this;
             $oClone->loadFromData($aLinha);
             $aModels[] = $oClone;
         }
@@ -49,7 +51,11 @@ abstract class ModelDba {
     }
 
     private function getSqlSearch() {
-        return 'SELECT * FROM ' . $this->getSchemaName() . '.' . $this->getTableName();
+        $aColumns = [];
+        foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
+            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
+        }
+        return 'SELECT ' . join(',', $aColumns) . '  FROM ' . $this->getSchemaName() . '.' . $this->getTableName();
     }
 
     public function create() {
@@ -74,7 +80,7 @@ abstract class ModelDba {
         $sSchema = $this->getSchemaName();
 
         list($aColumns, $aValues) = $this->getValuesTratados();
-        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join($aColumns, ','), join($aValues, ','));
+        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join(',', $aColumns), join(',', $aValues));
     }
 
     private function getValuesTratados() {
@@ -131,6 +137,11 @@ abstract class ModelDba {
             }
         }
         $this->getValuesTratados();
+    }
+    
+    public function toJson(){
+        $Json = $this->attribute;
+        return $Json;
     }
 
 }

@@ -32,7 +32,7 @@ class UserManager extends \Model\Manager\ManagerBase {
 
     public function create() {
         $oUser = $this->doLoadModel();
-        $oUser->create();
+        return $oUser->create();
     }
 
     public function delete() {
@@ -45,7 +45,7 @@ class UserManager extends \Model\Manager\ManagerBase {
 
     public function searchAll() {
         $oUser = new \Model\User();
-        $oUser->searchAll();
+        return $oUser->searchAll();
     }
 
     public function update() {

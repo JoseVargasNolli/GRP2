@@ -7,8 +7,8 @@ require ROOT_PATH . '/Model/Dba/QueryIterator.inc';
 
 class Connection {
 
-    private $sSqlStartup = ''
-            . 'CREATE TABLE IF NOT EXISTS sistema.user
+    private $sSqlStartup = ['
+        CREATE TABLE IF NOT EXISTS sistema.user
 (
     codigo integer NOT NULL,
     nome character varying(400) COLLATE pg_catalog."default" NOT NULL,
@@ -18,8 +18,19 @@ class Connection {
     telefone character varying(20) COLLATE pg_catalog."default",
     email character varying(100) COLLATE pg_catalog."default",
     CONSTRAINT user_pkey PRIMARY KEY (codigo)
+)',  '
+CREATE TABLE IF NOT EXISTS sistema.solicitacao
+(
+    codigo integer NOT NULL,
+    nome character varying(400) COLLATE pg_catalog."default" NOT NULL,
+    dataCadastro date NOT NULL,
+    texto text NOT NULL,
+    codigoUsuario integer NOT NULL,
+    CONSTRAINT solicitacao_pkey PRIMARY KEY (codigo)
 )
-';
+'
+        
+];
 
     protected function conecta() {
         $oDadosBanco = \DataBase\DadosBanco::getInstance();
@@ -44,7 +55,9 @@ class Connection {
             }
         }
         if ($this->isConnected) {
-            $this->execute($this->sSqlStartup);
+                foreach($this->sSqlStartup as $sSql){
+                $this->execute($sSql);
+            }
         }
         return $this->isConnected;
     }
@@ -74,12 +87,11 @@ class Connection {
     public function execute($sSql) {
         $xResource = false;
         try {
-            var_dump('Sql a ser executado é:' . $sSql);
             $xResource = pg_query($this->connection, $sSql);
         } catch (Throwable $e) {
             
         }
-
+        var_dump($xResource);
         return $xResource;
     }
 

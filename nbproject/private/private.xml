@@ -4,13 +4,15 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/QueryIterator.inc</file>
+            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/userTestCase.php</file>
+            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnVarchar.inc</file>
+            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnDate.inc</file>
+            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Manager/UserManager.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnDba.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ModelDba.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/index.php</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/Connection.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnSmallint.inc</file>
-            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnVarchar.inc</file>
-            <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnDate.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/DadosBanco.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/User.inc</file>
             <file>file:/C:/Bitnami/wappstack/apache2/htdocs/GRP2/Model/Dba/ColumnInteger.inc</file>

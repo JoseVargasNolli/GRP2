@@ -14,7 +14,7 @@ class ColumnInteger extends ColumnDba {
     private $increment = false;
 
     public function isValorValido($xValorValido, $bThrow = true) {
-        $bIsValido = is_integer($xValorValido);
+        $bIsValido = is_integer((int) $xValorValido);
         if (!$bIsValido) {
             if ($bThrow) {
                 $this->showExceptionNotSupported();
@@ -30,7 +30,6 @@ class ColumnInteger extends ColumnDba {
     }
 
     public function getValorTratadoForInsert($xValue) {
-        var_dump(' coluna de inteiro tratada é ' . $xValue);
         if ($this->increment && (is_null($xValue) || $xValue == '' || strtolower($xValue) == strtolower('null'))) {
             return "(SELECT COALESCE(MAX({$this->getDbaName()}),0) + 1  FROM %tabela%)";
         }
