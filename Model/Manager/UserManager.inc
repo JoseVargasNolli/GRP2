@@ -36,11 +36,20 @@ class UserManager extends \Model\Manager\ManagerBase {
     }
 
     public function delete() {
-        
+        $oUser = new \Model\User();
+        $oUser->setCodigo($this->getParam());
+        return ResponseManager::createSucessResponse(json_encode($oUser->delete()));
     }
 
     public function search() {
-        
+        $oUser = new \Model\User();
+        $oUser->setCodigo($this->getParam());
+        return ResponseManager::createSucessResponse(json_encode($oUser->refresh()));
+    }
+    public function searchTest($xCode) {
+        $oUser = new \Model\User();
+        $oUser->setCodigo($xCode);
+        return ResponseManager::createSucessResponse(json_encode($oUser->refresh()));
     }
 
     public function searchAll() {

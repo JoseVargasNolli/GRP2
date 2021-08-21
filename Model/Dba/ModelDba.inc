@@ -12,6 +12,7 @@ abstract class ModelDba {
 
     private $attribute;
     private $colunas;
+    private $loaded = false;
 
     public function __construct() {
         $this->attribute = [];
@@ -42,6 +43,21 @@ abstract class ModelDba {
         return $this->colunas[$sName];
     }
 
+    public function refresh() {
+        $aData = new \Model\Dba\QueryIterator($this->getSqlRefresh());
+        foreach ($aData as $aLinha) {
+            $this->loadFromData($aLinha);
+            var_dump($aLinha);
+            $this->setLoaded(true);
+        }
+        $aData->end();
+
+        if ($this->getLoaded()){
+            return false;
+        }
+        return $this->toJson();
+    }
+
     public function searchAll() {
         $aData = new \Model\Dba\QueryIterator($this->getSqlSearch());
 
@@ -49,6 +65,8 @@ abstract class ModelDba {
         foreach ($aData as $aLinha) {
             $oClone = new $this;
             $oClone->loadFromData($aLinha);
+            $oClone->setLoaded(true);
+            var_dump($aLinha);
             $aModels[] = $oClone->toJson();
         }
         $aData->end();
@@ -58,7 +76,7 @@ abstract class ModelDba {
     private function getSqlSearch() {
         $aColumns = [];
         foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
-            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
+//            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
         }
         return 'SELECT ' . join(',', $aColumns) . '  FROM ' . $this->getSchemaName() . '.' . $this->getTableName();
     }
@@ -76,8 +94,7 @@ abstract class ModelDba {
     public function delete() {
         $oConnection = new Connection();
         $oConnection->begin();
-        $oConnection->setSql($this->getSqlDelete());
-        $bSucess = $oConnection->execute();
+        $bSucess = $oConnection->execute($this->getSqlDelete());
         $oConnection->commit();
         return $bSucess;
     }
@@ -85,15 +102,32 @@ abstract class ModelDba {
     protected function getSqlDelete() {
         $sTable = $this->getTableName();
         $sSchema = $this->getSchemaName();
-
-        list($aColumns, $aValues) = $this->getValuesTratados();
-        return sprintf('INSERT INTO %s.%s (%s) VALUES (%s)', $sTable, $sSchema, join(',', $aColumns), join(',', $aValues));
+        list($aColumns, $aValues) = $this->getValuesTratados($this->getPk());
+        $aCondicao = [];
+        foreach ($aColumns as $sKey => $sColumn) {
+            $aCondicao[] = $sColumn . ' = ' . $aValues[$sKey];
+        }
+        return sprintf('DELETE FROM %s.%s WHERE %s', $sSchema, $sTable, join(' AND ', $aCondicao));
     }
 
-    private function getValuesTratados() {
+    protected function getSqlRefresh() {
+        $sTable = $this->getTableName();
+        $sSchema = $this->getSchemaName();
+        list($aColumns, $aValues) = $this->getValuesTratados($this->getPk());
+        $aCondicao = [];
+        foreach ($aColumns as $sKey => $sColumn) {
+            $aCondicao[] = $sColumn . ' = ' . $aValues[$sKey];
+        }
+        return sprintf('SELECT * FROM %s.%s WHERE %s', $sSchema, $sTable, join(' AND ', $aCondicao));
+    }
+
+    private function getValuesTratados($aColumnLoad = false) {
+        if (!$aColumnLoad) {
+            $aColumnLoad = $this->getColumns();
+        }
         $aColumns = [];
         $aValues = [];
-        foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
+        foreach ($aColumnLoad as /** @var ColumnDba $oColuna */ $oColuna) {
             $xValue = $this->getAttribute($oColuna->getModelName());
             if ($xValue && !is_null($xValue)) {
                 $oColuna->isValorValido($xValue);
@@ -149,6 +183,14 @@ abstract class ModelDba {
     public function toJson() {
         $Json = $this->attribute;
         return $Json;
+    }
+
+    function getLoaded() {
+        return $this->loaded;
+    }
+
+    function setLoaded($loaded): void {
+        $this->loaded = $loaded;
     }
 
 }
