@@ -2,9 +2,6 @@
 
 namespace Model;
 
-require_once ROOT_PATH . '/Model/Dba/ColumnDate.inc';
-require_once ROOT_PATH . '/Model/Dba/ColumnVarchar.inc';
-require_once ROOT_PATH . '/Model/Dba/ColumnInteger.inc';
 require_once ROOT_PATH . '/Model/Dba/ModelDba.inc';
 
 class User extends Dba\ModelDba {
@@ -30,6 +27,7 @@ class User extends Dba\ModelDba {
             new Dba\ColumnVarchar('documento', 'documento', 100),
             new Dba\ColumnVarchar('telefone', 'telefone', 20),
             new Dba\ColumnVarchar('email', 'email', 100),
+            new Dba\ColumnBoolean('vereador', 'vereador'),
         ];
     }
 
@@ -87,6 +85,14 @@ class User extends Dba\ModelDba {
 
     function setEmail($email): void {
         $this->setAttribute('email', $email);
+    }
+
+    function getVereador() {
+        return $this->getAttribute('vereador');
+    }
+
+    function setVereador($vereador): void {
+        $this->setAttribute('vereador', $vereador);
     }
 
 }

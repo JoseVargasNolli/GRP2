@@ -16,13 +16,13 @@ class ColumnDate extends ColumnDba {
             $aData = explode('/', $xValorValido);
 
             if (!(strlen($aData[0]) == 2) || !(strlen($aData[1]) == 2) || !(strlen($aData[2]) == 4)) {
-                $this->showExceptionNotSupported();
+//                $this->showExceptionNotSupported();
             }
         } catch (Exception $ex) {
             if ($bThrow) {
-                $this->showExceptionNotSupported();
+//                $this->showExceptionNotSupported();
             }
-            return false;
+//            return false;
         }
         return true;
     }

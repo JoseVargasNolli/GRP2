@@ -32,7 +32,7 @@ class UserManager extends \Model\Manager\ManagerBase {
 
     public function create() {
         $oUser = $this->doLoadModel();
-        return $oUser->create();
+        return ResponseManager::createSucessResponse(json_encode($oUser->create()));
     }
 
     public function delete() {
@@ -45,11 +45,15 @@ class UserManager extends \Model\Manager\ManagerBase {
 
     public function searchAll() {
         $oUser = new \Model\User();
-        return $oUser->searchAll();
+        return ResponseManager::createSucessResponse($oUser->searchAll());
     }
 
     public function update() {
         
+    }
+
+    public function getPath() {
+        return 'user';
     }
 
 }

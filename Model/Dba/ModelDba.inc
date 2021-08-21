@@ -3,6 +3,10 @@
 namespace Model\Dba;
 
 require_once ROOT_PATH . '/Model/Dba/Connection.inc';
+require_once ROOT_PATH . '/Model/Dba/ColumnDate.inc';
+require_once ROOT_PATH . '/Model/Dba/ColumnVarchar.inc';
+require_once ROOT_PATH . '/Model/Dba/ColumnInteger.inc';
+require_once ROOT_PATH . '/Model/Dba/ColumnBoolean.inc';
 
 abstract class ModelDba {
 
@@ -32,7 +36,8 @@ abstract class ModelDba {
     protected function getColumn($sName) {
         $sName = strtolower($sName);
         if (!isset($this->colunas[$sName])) {
-            throw new \Exception('Erro não esperado, contate o suporte (' . $sName . ')');
+            return false;
+//            throw new \Exception('Erro não esperado, contate o suporte (' . $sName . ')');
         }
         return $this->colunas[$sName];
     }
@@ -44,10 +49,10 @@ abstract class ModelDba {
         foreach ($aData as $aLinha) {
             $oClone = new $this;
             $oClone->loadFromData($aLinha);
-            $aModels[] = $oClone;
+            $aModels[] = $oClone->toJson();
         }
         $aData->end();
-        return $aModels;
+        return json_encode($aModels);
     }
 
     private function getSqlSearch() {
@@ -62,8 +67,10 @@ abstract class ModelDba {
         $oConnection = new Connection();
         $oConnection->begin();
         $bSucess = $oConnection->execute($this->getSqlInsert());
+        $aData = pg_fetch_array($bSucess);
+        $this->loadFromData($aData);
         $oConnection->commit();
-        return $bSucess;
+        return ($this->toJson());
     }
 
     public function delete() {
@@ -115,7 +122,7 @@ abstract class ModelDba {
         $sSchema = $this->getSchemaName();
 
         list($aColumns, $aValues) = $this->getValuesForInsert();
-        $sSql = 'INSERT INTO %tabela% (' . join(',', $aColumns) . ') VALUES (' . join(',', $aValues) . ')';
+        $sSql = 'INSERT INTO %tabela% (' . join(',', $aColumns) . ') VALUES (' . join(',', $aValues) . ') RETURNING *';
         return str_replace('%tabela%', $sSchema . '.' . $sTable, $sSql);
     }
 
@@ -132,14 +139,14 @@ abstract class ModelDba {
             if ($xValue) {
                 $oColuna = $this->getColumn($sKey);
                 if ($oColuna && $xValue) {
-                    $this->setAttribute($sKey, $xValue);
+                    $this->setAttribute($oColuna->getModelName(), $xValue);
                 }
             }
         }
         $this->getValuesTratados();
     }
-    
-    public function toJson(){
+
+    public function toJson() {
         $Json = $this->attribute;
         return $Json;
     }
