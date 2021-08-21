@@ -17,8 +17,9 @@ class Connection {
     documento character varying(100) COLLATE pg_catalog."default",
     telefone character varying(20) COLLATE pg_catalog."default",
     email character varying(100) COLLATE pg_catalog."default",
+    vereador boolean not null default 0,
     CONSTRAINT user_pkey PRIMARY KEY (codigo)
-)',  '
+)', '
 CREATE TABLE IF NOT EXISTS sistema.solicitacao
 (
     codigo integer NOT NULL,
@@ -29,8 +30,7 @@ CREATE TABLE IF NOT EXISTS sistema.solicitacao
     CONSTRAINT solicitacao_pkey PRIMARY KEY (codigo)
 )
 '
-        
-];
+    ];
 
     protected function conecta() {
         $oDadosBanco = \DataBase\DadosBanco::getInstance();
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS sistema.solicitacao
             }
         }
         if ($this->isConnected) {
-                foreach($this->sSqlStartup as $sSql){
+            foreach ($this->sSqlStartup as $sSql) {
                 $this->execute($sSql);
             }
         }
@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS sistema.solicitacao
         } catch (Throwable $e) {
             
         }
-        var_dump($xResource);
         return $xResource;
     }
 
