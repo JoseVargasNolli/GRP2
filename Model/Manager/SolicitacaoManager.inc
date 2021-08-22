@@ -50,4 +50,8 @@ class SolicitacaoManager extends \Model\Manager\ManagerBase {
         
     }
 
+    public function getPath() {
+        return 'solicitacao';
+    }
+
 }
