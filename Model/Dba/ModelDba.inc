@@ -76,7 +76,7 @@ abstract class ModelDba {
     private function getSqlSearch() {
         $aColumns = [];
         foreach ($this->getColumns() as /** @var ColumnDba $oColuna */ $oColuna) {
-//            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
+            $aColumns[$sColuna] = $sColuna = $oColuna->getDbaName();
         }
         return 'SELECT ' . join(',', $aColumns) . '  FROM ' . $this->getSchemaName() . '.' . $this->getTableName();
     }
